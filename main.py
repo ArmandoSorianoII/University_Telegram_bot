@@ -3,6 +3,8 @@ from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, Con
 from dotenv import load_dotenv
 from openai import OpenAI
 import os
+import requests
+from io import BytesIO
 
 # Cargar variables de entorno
 load_dotenv()
@@ -10,6 +12,7 @@ load_dotenv()
 # Obtener tokens
 TG_Bot = os.getenv("API_TOKEN_Telegram")
 LLM = os.getenv("API_TOKEN_deepseek")
+PDF_URL = os.getenv("PDF_URL", "https://drive.google.com/uc?export=download&id=1mP449kYc-8ZfFfbg2PsfYK1lbbc0EhL7")
 
 # Inicializar cliente de DeepSeek
 client = OpenAI(
@@ -18,7 +21,30 @@ client = OpenAI(
 )
 
 async def Saludo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text('Bienvenido al bot explicativo de la materia')
+    # Enviar mensaje de bienvenida
+    await update.message.reply_text('Bienvenido al bot explicativo de la materia de Inteligencia Artificial')
+    
+    # Enviar estado de descarga
+    await update.message.reply_text('📄 Descargando el material del curso...')
+    
+    try:
+        # Descargar el PDF desde Google Drive
+        response = requests.get(PDF_URL, timeout=30)
+        response.raise_for_status()
+        
+        # Crear archivo en memoria
+        pdf_file = BytesIO(response.content)
+        pdf_file.name = "Psinoptico Inteligencia artificial_2025.pdf"
+        
+        # Enviar el PDF
+        await update.message.reply_document(
+            document=pdf_file,
+            filename="Psinoptico Inteligencia artificial_2025.pdf",
+            caption="📚 Aquí está el material del curso de Inteligencia Artificial"
+        )
+        
+    except Exception as e:
+        await update.message.reply_text(f"❌ Error al descargar el PDF: {str(e)}")
 
 async def responder(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Responde mensajes usando DeepSeek"""
