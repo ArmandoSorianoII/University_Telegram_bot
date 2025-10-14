@@ -65,17 +65,14 @@ class PDFHandler:
     
     def is_pdf_loaded(self) -> bool:
         
-        "Verifica si el PDF está cargado"
+        #Verifica si el PDF está cargado
 
         return self.is_loaded
     
     def get_pdf_file(self) -> Optional[BytesIO]:
-        """
-        Obtiene el archivo PDF como BytesIO para envío
         
-        Returns:
-            BytesIO: Archivo PDF en memoria o None si hay error
-        """
+        #Obtiene el archivo PDF como BytesIO para envío
+        
         try:
             response = requests.get(self.pdf_url, timeout=30)
             response.raise_for_status()

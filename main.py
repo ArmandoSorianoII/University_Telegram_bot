@@ -8,7 +8,7 @@ from controllers.bot_controller import BotController
 load_dotenv()
 
 def main():
-    """Función principal que inicializa y ejecuta el bot"""
+    #Función principal que inicializa y ejecuta el bot
     
     # Obtener token de Telegram
     TG_Bot = os.getenv("API_TOKEN_Telegram")

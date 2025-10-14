@@ -18,12 +18,9 @@ class BotController:
         )
     
     def initialize_pdf(self) -> bool:
-        """
-        Inicializa la carga del PDF
         
-        Returns:
-            bool: True si se cargó exitosamente
-        """
+        "Inicializa la carga del PDF"
+        
         return self.pdf_handler.load_pdf()
     
     def get_pdf_content(self) -> str:
@@ -36,26 +33,20 @@ class BotController:
         return self.pdf_handler.get_content()
     
     def is_pdf_available(self) -> bool:
-        """
-        Verifica si el PDF está disponible
         
-        Returns:
-            bool: True si está disponible
-        """
+        #Verifica si el PDF está disponible
+        
         return self.pdf_handler.is_pdf_loaded()
     
     def get_pdf_file(self):
-        """
-        Obtiene el archivo PDF para envío
         
-        Returns:
-            BytesIO: Archivo PDF o None
-        """
+        #Obtiene el archivo PDF para envío
+        
         return self.pdf_handler.get_pdf_file()
     
     async def generate_response(self, question: str) -> str:
         
-        "Genera una respuesta usando DeepSeek basada en el contenido del PDF"
+        #Genera una respuesta usando DeepSeek basada en el contenido del PDF
         
         pdf_content = self.get_pdf_content()
         
@@ -87,7 +78,7 @@ Recuerda: SOLO responde sobre el contenido de este material."""
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": question}
                 ],
-                temperature=0.3
+                temperature=0.7
             )
             
             return response.choices[0].message.content
@@ -96,13 +87,10 @@ Recuerda: SOLO responde sobre el contenido de este material."""
             return f"❌ Error: {str(e)}"
     
     async def handle_start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """
-        Maneja el comando /start
         
-        Args:
-            update: Objeto Update de telegram
-            context: Contexto del bot
-        """
+        #Maneja el comando /start
+        
+        
         # Enviar mensaje de bienvenida
         await update.message.reply_text('Bienvenido al bot explicativo de la materia de Inteligencia Artificial')
         
@@ -134,13 +122,10 @@ Recuerda: SOLO responde sobre el contenido de este material."""
             await update.message.reply_text(f"❌ Error al descargar el PDF: {str(e)}")
     
     async def handle_text_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        """
-        Maneja mensajes de texto del usuario
+  
+        #Maneja mensajes de texto del usuario
         
-        Args:
-            update: Objeto Update de telegram
-            context: Contexto del bot
-        """
+      
         # Verificar que el PDF esté disponible
         if not self.is_pdf_available():
             await update.message.reply_text(
