@@ -2,6 +2,8 @@
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
 from dotenv import load_dotenv
 import os
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
 from controllers.bot_controller import BotController
 
 # Cargar variables de entorno
@@ -35,6 +37,29 @@ def main():
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, bot_controller.handle_text_message))
     
     # Iniciar bot
+    # Levantar un servidor HTTP ligero para que Render detecte un puerto abierto (health check)
+    class _HealthHandler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            self.send_response(200)
+            self.send_header("Content-Type", "text/plain; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(b"OK")
+
+        # Evitar logs por cada request
+        def log_message(self, format, *args):
+            return
+
+    def _start_health_server():
+        try:
+            port = int(os.environ.get("PORT", "8000"))
+        except Exception:
+            port = 8000
+        server = HTTPServer(("0.0.0.0", port), _HealthHandler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        print(f"🔌 Health server listening on port {port}")
+
+    _start_health_server()
     print("✅ Bot iniciado. Presiona Ctrl+C para detener.\n")
     application.run_polling()
 
