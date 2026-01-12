@@ -1,5 +1,5 @@
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, CallbackQueryHandler, filters
 
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
 from dotenv import load_dotenv
 import os
 import threading
@@ -32,9 +32,11 @@ def main():
     
     # Registrar comandos
     application.add_handler(CommandHandler("start", bot_controller.handle_start_command))
+    application.add_handler(CommandHandler("recursos", bot_controller.handle_resources_command))
     
     # Registrar handler para mensajes de texto
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, bot_controller.handle_text_message))
+    application.add_handler(CallbackQueryHandler(bot_controller.handle_resources_callback))
     
     # Iniciar bot
     # Levantar un servidor HTTP ligero para que Render detecte un puerto abierto (health check)
