@@ -1,4 +1,5 @@
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, CallbackQueryHandler, filters
+from telegram import BotCommand
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, CallbackQueryHandler, filters, Application
 
 from dotenv import load_dotenv
 import os
@@ -8,6 +9,15 @@ from controllers.bot_controller import BotController
 
 # Cargar variables de entorno
 load_dotenv()
+
+async def post_init(application: Application):
+    """
+    Configura los comandos del bot en el menú de Telegram
+    """
+    await application.bot.set_my_commands([
+        BotCommand("start", "Iniciar el bot"),
+        BotCommand("recursos", "Ver recursos disponibles")
+    ])
 
 def main():
     #Función principal que inicializa y ejecuta el bot
@@ -28,7 +38,7 @@ def main():
         print("⚠️ Advertencia: No se pudo cargar el PDF inicialmente")
     
     # Crear aplicación
-    application = ApplicationBuilder().token(TG_Bot).build()
+    application = ApplicationBuilder().token(TG_Bot).post_init(post_init).build()
     
     # Registrar comandos
     application.add_handler(CommandHandler("start", bot_controller.handle_start_command))
